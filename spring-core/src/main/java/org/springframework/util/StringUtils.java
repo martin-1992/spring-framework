@@ -109,6 +109,8 @@ public abstract class StringUtils {
 	}
 
 	/**
+	 * 路径不为空，且长度不为 0，则返回 true
+	 *
 	 * Check that the given {@code String} is neither {@code null} nor of length 0.
 	 * <p>Note: this method returns {@code true} for a {@code String} that
 	 * purely consists of whitespace.
@@ -389,16 +391,19 @@ public abstract class StringUtils {
 	 * @return a {@code String} with the replacements
 	 */
 	public static String replace(String inString, String oldPattern, @Nullable String newPattern) {
+		// 为空，则直接返回
 		if (!hasLength(inString) || !hasLength(oldPattern) || newPattern == null) {
 			return inString;
 		}
+		// 旧模式下的字符串位置索引
 		int index = inString.indexOf(oldPattern);
 		if (index == -1) {
 			// no occurrence -> can return input as-is
 			return inString;
 		}
-
+		// 要进行处理的字符串长度
 		int capacity = inString.length();
+		// 如果在新模式的字符串大于旧模式的，即增加容量，因为使用新模式后，字符串长度会增加
 		if (newPattern.length() > oldPattern.length()) {
 			capacity += 16;
 		}
@@ -406,13 +411,20 @@ public abstract class StringUtils {
 
 		int pos = 0;  // our position in the old string
 		int patLen = oldPattern.length();
+		// 假设 inString 为 "D:\\abc\\cb"，oldPattern 为 "\\"，newPattern 为 "/"
 		while (index >= 0) {
+			// 选择 oldPattern 对应的字符串位置之前的，即 "D:"
 			sb.append(inString.substring(pos, index));
+			// 加上新模式的字符串，即 "D:/"
 			sb.append(newPattern);
+			// 此时找到第一个 "\\"，其 index 为 2，加上 oldPattern 的长度，pos 为 4
+			// 即从 "abc\\cb" 开始继续查找 oldPattern，直到全部都替换完，从
+			// "D:\\abc\\cb" -> "D:/abc/"
 			pos = index + patLen;
 			index = inString.indexOf(oldPattern, pos);
 		}
 
+		// 将剩余右边字符串加上去，即 "D:/abc/" -> "D:/abc/cb"
 		// append any characters to the right of a match
 		sb.append(inString.substring(pos));
 		return sb.toString();
@@ -633,6 +645,7 @@ public abstract class StringUtils {
 	 * @return the normalized path
 	 */
 	public static String cleanPath(String path) {
+		// 路径为空，则直接返回不处理
 		if (!hasLength(path)) {
 			return path;
 		}

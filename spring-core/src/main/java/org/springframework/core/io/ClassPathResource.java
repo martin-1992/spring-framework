@@ -77,6 +77,8 @@ public class ClassPathResource extends AbstractFileResolvingResource {
 	 */
 	public ClassPathResource(String path, @Nullable ClassLoader classLoader) {
 		Assert.notNull(path, "Path must not be null");
+		// 将一个路径字符串进行简化，得到一个简单的路径。比如 1/./2/../../../../3/4/././../../../5最
+		// 终简化为../../../5
 		String pathToUse = StringUtils.cleanPath(path);
 		if (pathToUse.startsWith("/")) {
 			pathToUse = pathToUse.substring(1);
